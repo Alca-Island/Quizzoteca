@@ -4,6 +4,7 @@ import { Button } from '../../components/ui/button';
 import { Card, CardContent } from '../../components/ui/card';
 import { ArrowLeft, Save, Plus, Trash2, CheckCircle2, XCircle } from 'lucide-react';
 import type { Question } from '../../types/quiz';
+import { MinefieldEditor } from './MinefieldEditor';
 
 interface QuizEditorProps {
   onBack: () => void;
@@ -29,13 +30,27 @@ export function QuizEditor({ onBack }: QuizEditorProps) {
     updateQuiz(quiz.id, { title, description });
   };
 
-  const handleAddQuestion = () => {
+  const handleAddTrueFalse = () => {
     addQuestion(quiz.id, {
       type: 'TRUE_FALSE',
       text: 'New Question',
       correctAnswer: true,
       timeLimit: 30,
-    });
+    } as any);
+  };
+
+  const handleAddMinefield = () => {
+    addQuestion(quiz.id, {
+      type: 'MINEFIELD',
+      text: 'New Minefield',
+      timeLimit: 60,
+      grid: Array.from({ length: 20 }, (_, i) => ({
+        id: Math.random().toString(36).substring(2, 9),
+        index: i,
+        hiddenType: 'TEXT',
+        hiddenContent: '',
+      }))
+    } as any);
   };
 
   return (
@@ -86,10 +101,16 @@ export function QuizEditor({ onBack }: QuizEditorProps) {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h3 className="text-xl font-semibold text-white">Questions ({quiz.questions.length})</h3>
-          <Button onClick={handleAddQuestion} variant="secondary" size="sm" className="gap-2">
-            <Plus className="size-4" />
-            Add Question
-          </Button>
+          <div className="flex gap-2">
+            <Button onClick={handleAddMinefield} variant="secondary" size="sm" className="gap-2">
+              <Plus className="size-4" />
+              Add Minefield
+            </Button>
+            <Button onClick={handleAddTrueFalse} variant="secondary" size="sm" className="gap-2">
+              <Plus className="size-4" />
+              Add True/False
+            </Button>
+          </div>
         </div>
 
         <div className="space-y-4">
@@ -129,49 +150,58 @@ function QuestionItem({
         </div>
 
         <div className="flex-1 space-y-4">
-          <input
-            type="text"
-            value={question.text}
-            onChange={(e) => onUpdate({ text: e.target.value })}
-            className="w-full bg-transparent border-none text-lg font-medium text-white placeholder:text-slate-600 focus:outline-none focus:ring-0"
-            placeholder="Enter question text..."
-          />
-
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 bg-slate-950/50 p-1 rounded-lg border border-white/5">
-              <button
-                onClick={() => onUpdate({ correctAnswer: true })}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${question.correctAnswer
-                    ? 'bg-green-500/20 text-green-400'
-                    : 'text-slate-500 hover:text-slate-300'
-                  }`}
-              >
-                <CheckCircle2 className="size-4" />
-                True
-              </button>
-              <button
-                onClick={() => onUpdate({ correctAnswer: false })}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${!question.correctAnswer
-                    ? 'bg-red-500/20 text-red-400'
-                    : 'text-slate-500 hover:text-slate-300'
-                  }`}
-              >
-                <XCircle className="size-4" />
-                False
-              </button>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Time Limit</span>
+          {question.type === 'TRUE_FALSE' ? (
+            <>
               <input
-                type="number"
-                value={question.timeLimit}
-                onChange={(e) => onUpdate({ timeLimit: parseInt(e.target.value) || 0 })}
-                className="w-16 bg-slate-950 border border-slate-800 rounded px-2 py-1 text-sm text-center text-white focus:outline-none focus:border-indigo-500"
+                type="text"
+                value={question.text}
+                onChange={(e) => onUpdate({ text: e.target.value })}
+                className="w-full bg-transparent border-none text-lg font-medium text-white placeholder:text-slate-600 focus:outline-none focus:ring-0"
+                placeholder="Enter question text..."
               />
-              <span className="text-sm text-slate-500">sec</span>
-            </div>
-          </div>
+
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2 bg-slate-950/50 p-1 rounded-lg border border-white/5">
+                  <button
+                    onClick={() => onUpdate({ correctAnswer: true })}
+                    className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${question.correctAnswer
+                      ? 'bg-green-500/20 text-green-400'
+                      : 'text-slate-500 hover:text-slate-300'
+                      }`}
+                  >
+                    <CheckCircle2 className="size-4" />
+                    True
+                  </button>
+                  <button
+                    onClick={() => onUpdate({ correctAnswer: false })}
+                    className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${!question.correctAnswer
+                      ? 'bg-red-500/20 text-red-400'
+                      : 'text-slate-500 hover:text-slate-300'
+                      }`}
+                  >
+                    <XCircle className="size-4" />
+                    False
+                  </button>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Time Limit</span>
+                  <input
+                    type="number"
+                    value={question.timeLimit}
+                    onChange={(e) => onUpdate({ timeLimit: parseInt(e.target.value) || 0 })}
+                    className="w-16 bg-slate-950 border border-slate-800 rounded px-2 py-1 text-sm text-center text-white focus:outline-none focus:border-indigo-500"
+                  />
+                  <span className="text-sm text-slate-500">sec</span>
+                </div>
+              </div>
+            </>
+          ) : question.type === 'MINEFIELD' ? (
+            <MinefieldEditor
+              question={question}
+              onUpdate={(updates) => onUpdate(updates as any)}
+            />
+          ) : null}
         </div>
 
         <div className="flex-none">

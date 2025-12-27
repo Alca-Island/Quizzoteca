@@ -1,13 +1,32 @@
-export type QuestionType = 'TRUE_FALSE';
+export type QuestionType = 'TRUE_FALSE' | 'MINEFIELD';
 
-export interface Question {
+export interface BaseQuestion {
   id: string;
   type: QuestionType;
   text: string;
-  // For True/False, answer is boolean. We can use a generic or union if we add more types later.
-  correctAnswer: boolean;
   timeLimit?: number; // in seconds
 }
+
+export interface TrueFalseQuestion extends BaseQuestion {
+  type: 'TRUE_FALSE';
+  correctAnswer: boolean;
+}
+
+export interface MinefieldCell {
+  id: string;
+  index: number; // 0-19 for 5x4 grid
+  coverImage?: string; // URL for the top layer
+  hiddenType: 'TEXT' | 'IMAGE';
+  hiddenContent: string; // Text string or Image URL
+  isRevealed?: boolean; // Runtime state
+}
+
+export interface MinefieldQuestion extends BaseQuestion {
+  type: 'MINEFIELD';
+  grid: MinefieldCell[]; // Fixed size, but array for simplicity
+}
+
+export type Question = TrueFalseQuestion | MinefieldQuestion;
 
 export interface Quiz {
   id: string;
