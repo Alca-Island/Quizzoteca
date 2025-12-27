@@ -11,10 +11,8 @@ interface MinefieldEditorProps {
 export function MinefieldEditor({ question, onUpdate }: MinefieldEditorProps) {
     const GRID_SIZE = 20; // 5 rows * 4 cols
 
-    // Ensure grid is initialized
-    // Ensure grid is initialized
-    // Logic moved to parent or handled by default values in render if specific initialization is strictly needed before render.
-    // For now we handle optional grid in render.
+    // Ensure grid is initialized if needed, but we handle optional grid in render.
+
 
     const handleCellUpdate = (index: number, updates: Partial<MinefieldCell>) => {
         const newGrid = [...(question.grid || [])];

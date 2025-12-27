@@ -11,18 +11,11 @@ interface GameHubProps {
 }
 
 export function GameHub({ quizId, onSelectSection, onExit }: GameHubProps) {
-    const { quizzes, activeSession, updateSession, endSession } = useQuizStore();
+    const { quizzes, activeSession, updatePlayerScore, endSession } = useQuizStore();
 
     // Safety check, though parent should handle logic
     const quiz = quizzes.find(q => q.id === quizId);
     if (!quiz || !activeSession) return null;
-
-    const handleUpdateScore = (playerId: string, delta: number) => {
-        const updatedPlayers = activeSession.players.map(p =>
-            p.id === playerId ? { ...p, score: p.score + delta } : p
-        );
-        updateSession({ players: updatedPlayers });
-    };
 
     return (
         <div className="max-w-7xl mx-auto space-y-8 p-6 h-[calc(100vh-4rem)] flex flex-col">
@@ -79,7 +72,7 @@ export function GameHub({ quizId, onSelectSection, onExit }: GameHubProps) {
                     <div className="flex-1 overflow-y-auto">
                         <Scoreboard
                             players={activeSession.players}
-                            onUpdateScore={handleUpdateScore}
+                            onUpdateScore={updatePlayerScore}
                             compact={true}
                         />
                     </div>

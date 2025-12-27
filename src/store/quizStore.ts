@@ -10,6 +10,7 @@ interface StoreState extends QuizState {
   activeSession: GameSessionState | null;
   startSession: (quizId: string, players: any[]) => void;
   updateSession: (updates: Partial<GameSessionState>) => void;
+  updatePlayerScore: (playerId: string, delta: number) => void;
   endSession: () => void;
 }
 
@@ -173,6 +174,20 @@ export const useQuizStore = create<StoreState>()(
         set((state) => state.activeSession ? {
           activeSession: { ...state.activeSession, ...updates, lastActive: Date.now() }
         } : {}),
+
+      updatePlayerScore: (playerId, delta) =>
+        set((state) => {
+          if (!state.activeSession) return {};
+          return {
+            activeSession: {
+              ...state.activeSession,
+              players: state.activeSession.players.map((p) =>
+                p.id === playerId ? { ...p, score: p.score + delta } : p
+              ),
+              lastActive: Date.now(),
+            },
+          };
+        }),
 
       endSession: () => set({ activeSession: null })
     }),

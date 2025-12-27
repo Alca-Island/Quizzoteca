@@ -18,7 +18,11 @@ interface GameSessionProps {
 export function GameSession({ section, players: initialPlayers, onExit }: GameSessionProps) {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [isAnswerRevealed, setIsAnswerRevealed] = useState(false);
-  const [players, setPlayers] = useState<Player[]>(initialPlayers);
+  const { updatePlayerScore, activeSession } = useQuizStore();
+
+  // Use players from store if available (preferable for consistency), or fallback to props/initial
+  // Actually, since we are in a session, activeSession.players should be the source of truth.
+  const players = activeSession?.players || initialPlayers;
 
   const currentQuestion = section.questions[currentQuestionIndex];
   const isLastQuestion = currentQuestionIndex === section.questions.length - 1;
@@ -42,16 +46,6 @@ export function GameSession({ section, players: initialPlayers, onExit }: GameSe
     setIsAnswerRevealed(!isAnswerRevealed);
   };
 
-  const { updateSession } = useQuizStore();
-
-  const handleUpdateScore = (playerId: string, delta: number) => {
-    const updatedPlayers = players.map(p =>
-      p.id === playerId ? { ...p, score: p.score + delta } : p
-    );
-    setPlayers(updatedPlayers);
-    updateSession({ players: updatedPlayers });
-  };
-
   if (!currentQuestion) {
     return (
       <div className="flex flex-col items-center justify-center h-[80vh] text-center space-y-8">
@@ -59,7 +53,7 @@ export function GameSession({ section, players: initialPlayers, onExit }: GameSe
 
         <div className="w-full max-w-4xl">
           <h3 className="text-2xl text-indigo-300 mb-6">Current Scores</h3>
-          <Scoreboard players={players} onUpdateScore={() => { }} />
+          <Scoreboard players={players} onUpdateScore={updatePlayerScore} />
         </div>
 
         <Button onClick={onExit} variant="premium" size="lg" className="mt-8">Back to Hub</Button>
@@ -158,7 +152,7 @@ export function GameSession({ section, players: initialPlayers, onExit }: GameSe
         </AnimatePresence>
 
         {/* Scoreboard */}
-        <Scoreboard players={players} onUpdateScore={handleUpdateScore} />
+        <Scoreboard players={players} onUpdateScore={updatePlayerScore} />
       </div>
 
       {/* Bottom Controls */}
