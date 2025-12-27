@@ -1,15 +1,24 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { QuizState } from '../types/quiz';
+import type { QuizState, Question } from '../types/quiz';
+import type { GameSessionState } from '../types/game';
 
-// Simple UUID generator fallback if uuid package isn't available or for simplicity
+// Simple UUID generator fallback
 const generateId = () => Math.random().toString(36).substring(2, 9);
 
-export const useQuizStore = create<QuizState>()(
+interface StoreState extends QuizState {
+  activeSession: GameSessionState | null;
+  startSession: (quizId: string, players: any[]) => void;
+  updateSession: (updates: Partial<GameSessionState>) => void;
+  endSession: () => void;
+}
+
+export const useQuizStore = create<StoreState>()(
   persist(
     (set) => ({
       quizzes: [],
       activeQuizId: null,
+      activeSession: null,
 
       addQuiz: (quizData) =>
         set((state) => ({
@@ -20,7 +29,7 @@ export const useQuizStore = create<QuizState>()(
               id: generateId(),
               createdAt: Date.now(),
               updatedAt: Date.now(),
-              questions: [],
+              sections: [], // Initialize with empty sections
             },
           ],
         })),
@@ -40,32 +49,29 @@ export const useQuizStore = create<QuizState>()(
 
       setActiveQuiz: (id) => set({ activeQuizId: id }),
 
-      addQuestion: (quizId, questionData) =>
+      // --- Section Management ---
+      addSection: (quizId, title) =>
         set((state) => ({
           quizzes: state.quizzes.map((q) =>
             q.id === quizId
               ? {
                 ...q,
-                questions: [
-                  ...q.questions,
-                  { ...questionData, id: generateId() },
-                ],
+                sections: [...(q.sections || []), { id: generateId(), title, questions: [] }],
+
                 updatedAt: Date.now(),
               }
               : q
           ),
         })),
 
-      updateQuestion: (quizId, questionId, updates) =>
+      updateSection: (quizId, sectionId, title) =>
         set((state) => ({
           quizzes: state.quizzes.map((q) =>
             q.id === quizId
               ? {
                 ...q,
-                questions: q.questions.map((question) =>
-                  question.id === questionId
-                    ? { ...question, ...updates }
-                    : question
+                sections: (q.sections || []).map((s) =>
+                  s.id === sectionId ? { ...s, title } : s
                 ),
                 updatedAt: Date.now(),
               }
@@ -73,18 +79,102 @@ export const useQuizStore = create<QuizState>()(
           ),
         })),
 
-      deleteQuestion: (quizId, questionId) =>
+      deleteSection: (quizId, sectionId) =>
         set((state) => ({
           quizzes: state.quizzes.map((q) =>
             q.id === quizId
               ? {
                 ...q,
-                questions: q.questions.filter((question) => question.id !== questionId),
+                sections: (q.sections || []).filter((s) => s.id !== sectionId),
+
                 updatedAt: Date.now(),
               }
               : q
           ),
         })),
+
+      // --- Question Management ---
+      addQuestion: (quizId, sectionId, questionData) =>
+        set((state) => ({
+          quizzes: state.quizzes.map((q) =>
+            q.id === quizId
+              ? {
+                ...q,
+                sections: q.sections.map((s) =>
+                  s.id === sectionId
+                    ? {
+                      ...s,
+                      questions: [...s.questions, { ...questionData, id: generateId() } as Question],
+                    }
+                    : s
+                ),
+                updatedAt: Date.now(),
+              }
+              : q
+          ),
+        })),
+
+      updateQuestion: (quizId, sectionId, questionId, updates) =>
+        set((state) => ({
+          quizzes: state.quizzes.map((q) =>
+            q.id === quizId
+              ? {
+                ...q,
+                sections: (q.sections || []).map((s) =>
+                  s.id === sectionId
+                    ? {
+                      ...s,
+                      questions: s.questions.map((question) =>
+                        question.id === questionId ? ({ ...question, ...updates } as Question) : question
+                      ),
+                    }
+                    : s
+                ),
+                updatedAt: Date.now(),
+              }
+              : q
+          ),
+        })),
+
+      deleteQuestion: (quizId, sectionId, questionId) =>
+        set((state) => ({
+          quizzes: state.quizzes.map((q) =>
+            q.id === quizId
+              ? {
+                ...q,
+                sections: (q.sections || []).map((s) =>
+                  s.id === sectionId
+                    ? {
+                      ...s,
+                      questions: s.questions.filter((q) => q.id !== questionId),
+                    }
+                    : s
+                ),
+                updatedAt: Date.now(),
+              }
+              : q
+          ),
+        })),
+
+      // --- Session Management ---
+      startSession: (quizId, players) =>
+        set({
+          activeSession: {
+            sessionId: generateId(),
+            quizId,
+            players,
+            activeSectionId: null,
+            startTime: Date.now(),
+            lastActive: Date.now()
+          }
+        }),
+
+      updateSession: (updates) =>
+        set((state) => state.activeSession ? {
+          activeSession: { ...state.activeSession, ...updates, lastActive: Date.now() }
+        } : {}),
+
+      endSession: () => set({ activeSession: null })
     }),
     {
       name: 'quiz-storage',

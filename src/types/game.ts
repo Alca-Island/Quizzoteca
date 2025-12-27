@@ -3,3 +3,12 @@ export interface Player {
   name: string;
   score: number;
 }
+
+export interface GameSessionState {
+  sessionId: string;
+  quizId: string;
+  players: Player[];
+  activeSectionId: string | null;
+  startTime: number;
+  lastActive: number;
+}

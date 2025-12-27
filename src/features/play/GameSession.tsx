@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import type { Quiz } from '../../types/quiz';
+import { useQuizStore } from '../../store/quizStore';
+import type { QuizSection } from '../../types/quiz';
 import type { Player } from '../../types/game';
 import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
@@ -9,18 +10,18 @@ import { Scoreboard } from './Scoreboard';
 import { MinefieldGame } from './MinefieldGame';
 
 interface GameSessionProps {
-  quiz: Quiz;
-  initialPlayers: Player[];
+  section: QuizSection;
+  players: Player[];
   onExit: () => void;
 }
 
-export function GameSession({ quiz, initialPlayers, onExit }: GameSessionProps) {
+export function GameSession({ section, players: initialPlayers, onExit }: GameSessionProps) {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [isAnswerRevealed, setIsAnswerRevealed] = useState(false);
   const [players, setPlayers] = useState<Player[]>(initialPlayers);
 
-  const currentQuestion = quiz.questions[currentQuestionIndex];
-  const isLastQuestion = currentQuestionIndex === quiz.questions.length - 1;
+  const currentQuestion = section.questions[currentQuestionIndex];
+  const isLastQuestion = currentQuestionIndex === section.questions.length - 1;
   const isFirstQuestion = currentQuestionIndex === 0;
 
   const handleNext = () => {
@@ -41,23 +42,27 @@ export function GameSession({ quiz, initialPlayers, onExit }: GameSessionProps) 
     setIsAnswerRevealed(!isAnswerRevealed);
   };
 
+  const { updateSession } = useQuizStore();
+
   const handleUpdateScore = (playerId: string, delta: number) => {
-    setPlayers(players.map(p =>
+    const updatedPlayers = players.map(p =>
       p.id === playerId ? { ...p, score: p.score + delta } : p
-    ));
+    );
+    setPlayers(updatedPlayers);
+    updateSession({ players: updatedPlayers });
   };
 
   if (!currentQuestion) {
     return (
       <div className="flex flex-col items-center justify-center h-[80vh] text-center space-y-8">
-        <h2 className="text-4xl font-bold text-white">Quiz Completed!</h2>
+        <h2 className="text-4xl font-bold text-white">Section Completed!</h2>
 
         <div className="w-full max-w-4xl">
-          <h3 className="text-2xl text-indigo-300 mb-6">Final Scores</h3>
+          <h3 className="text-2xl text-indigo-300 mb-6">Current Scores</h3>
           <Scoreboard players={players} onUpdateScore={() => { }} />
         </div>
 
-        <Button onClick={onExit} variant="premium" size="lg" className="mt-8">Back to Menu</Button>
+        <Button onClick={onExit} variant="premium" size="lg" className="mt-8">Back to Hub</Button>
       </div>
     );
   }
@@ -68,10 +73,10 @@ export function GameSession({ quiz, initialPlayers, onExit }: GameSessionProps) 
       <div className="flex items-center justify-between mb-4">
         <Button variant="ghost" onClick={onExit} className="text-slate-400 hover:text-white">
           <ArrowLeft className="mr-2 size-4" />
-          Exit Quiz
+          Exit Section
         </Button>
         <div className="text-slate-400 font-mono">
-          Question {currentQuestionIndex + 1} / {quiz.questions.length}
+          Question {currentQuestionIndex + 1} / {section.questions.length}
         </div>
       </div>
 

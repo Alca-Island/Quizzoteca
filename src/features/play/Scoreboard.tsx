@@ -7,11 +7,44 @@ import { motion } from 'framer-motion';
 interface ScoreboardProps {
   players: Player[];
   onUpdateScore: (playerId: string, delta: number) => void;
+  compact?: boolean;
 }
 
-export function Scoreboard({ players, onUpdateScore }: ScoreboardProps) {
+export function Scoreboard({ players, onUpdateScore, compact = false }: ScoreboardProps) {
   // Sort players by score descending
   const sortedPlayers = [...players].sort((a, b) => b.score - a.score);
+
+  if (compact) {
+    return (
+      <div className="space-y-2">
+        {sortedPlayers.map((player, index) => (
+          <div
+            key={player.id}
+            className="flex items-center justify-between bg-slate-900/40 p-2 rounded-lg border border-white/5"
+          >
+            <div className="flex items-center gap-2 overflow-hidden">
+              <div className={`flex-none size-6 rounded-full flex items-center justify-center text-xs font-bold ${index === 0 ? 'bg-yellow-500/20 text-yellow-500' : 'bg-slate-800 text-slate-500'
+                }`}>
+                {index + 1}
+              </div>
+              <span className="truncate font-medium text-slate-200 text-sm">{player.name}</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="font-mono font-bold text-indigo-400">{player.score}</span>
+              <div className="flex gap-1">
+                <Button variant="ghost" size="icon" className="size-6 h-6 w-6" onClick={() => onUpdateScore(player.id, -10)}>
+                  <Minus className="size-3" />
+                </Button>
+                <Button variant="ghost" size="icon" className="size-6 h-6 w-6" onClick={() => onUpdateScore(player.id, 10)}>
+                  <Plus className="size-3" />
+                </Button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-4xl mx-auto mt-8">

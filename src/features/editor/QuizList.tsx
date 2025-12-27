@@ -13,7 +13,7 @@ export function QuizList() {
     addQuiz({
       title: 'New Quiz',
       description: 'A brand new quiz waiting for questions.',
-      questions: [],
+
     });
   };
 
@@ -24,7 +24,7 @@ export function QuizList() {
 
   const handleDeleteQuiz = (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
-    if (confirm('Are you sure you want to delete this quiz?')) {
+    if (window.confirm('Are you sure you want to delete this quiz?')) {
       deleteQuiz(id);
     }
   };
@@ -68,23 +68,23 @@ export function QuizList() {
             className="group relative overflow-hidden border-white/5 bg-slate-900/40 hover:bg-slate-900/60 transition-all duration-300 hover:border-indigo-500/30 hover:shadow-2xl hover:shadow-indigo-500/10 cursor-pointer"
             onClick={() => handleEditQuiz(quiz.id)}
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 via-transparent to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 via-transparent to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
-            <CardHeader>
+            <CardHeader className="relative z-10">
               <CardTitle className="group-hover:text-indigo-400 transition-colors">{quiz.title}</CardTitle>
               <CardDescription className="line-clamp-2 mt-2">
                 {quiz.description}
               </CardDescription>
             </CardHeader>
 
-            <CardFooter className="flex justify-between text-xs text-slate-500 mt-auto">
+            <CardFooter className="flex justify-between text-xs text-slate-500 mt-auto relative z-10">
               <div className="flex items-center gap-1">
                 <Calendar className="size-3" />
                 {new Date(quiz.updatedAt).toLocaleDateString()}
               </div>
               <div className="flex items-center gap-2">
                 <span className="bg-slate-800 px-2 py-1 rounded-full text-slate-300">
-                  {quiz.questions.length} questions
+                  {quiz.sections.reduce((acc, s) => acc + s.questions.length, 0)} questions
                 </span>
                 <Button
                   variant="ghost"

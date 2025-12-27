@@ -28,11 +28,17 @@ export interface MinefieldQuestion extends BaseQuestion {
 
 export type Question = TrueFalseQuestion | MinefieldQuestion;
 
+export interface QuizSection {
+  id: string;
+  title: string;
+  questions: Question[];
+}
+
 export interface Quiz {
   id: string;
   title: string;
   description: string;
-  questions: Question[];
+  sections: QuizSection[];
   createdAt: number;
   updatedAt: number;
 }
@@ -40,13 +46,18 @@ export interface Quiz {
 export interface QuizState {
   quizzes: Quiz[];
   activeQuizId: string | null;
-  addQuiz: (quiz: Omit<Quiz, 'id' | 'createdAt' | 'updatedAt'>) => void;
+  addQuiz: (quiz: Omit<Quiz, 'id' | 'createdAt' | 'updatedAt' | 'sections'>) => void;
   updateQuiz: (id: string, updates: Partial<Quiz>) => void;
   deleteQuiz: (id: string) => void;
   setActiveQuiz: (id: string | null) => void;
 
-  // Question management for active quiz
-  addQuestion: (quizId: string, question: Omit<Question, 'id'>) => void;
-  updateQuestion: (quizId: string, questionId: string, updates: Partial<Question>) => void;
-  deleteQuestion: (quizId: string, questionId: string) => void;
+  // Section management
+  addSection: (quizId: string, title: string) => void;
+  updateSection: (quizId: string, sectionId: string, title: string) => void;
+  deleteSection: (quizId: string, sectionId: string) => void;
+
+  // Question management
+  addQuestion: (quizId: string, sectionId: string, question: Omit<Question, 'id'>) => void;
+  updateQuestion: (quizId: string, sectionId: string, questionId: string, updates: Partial<Question>) => void;
+  deleteQuestion: (quizId: string, sectionId: string, questionId: string) => void;
 }
