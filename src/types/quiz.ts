@@ -1,15 +1,10 @@
-export type QuestionType = 'TRUE_FALSE' | 'MINEFIELD' | 'GUESS_FUSION';
+export type QuestionType = 'MINEFIELD' | 'GUESS_FUSION';
 
 export interface BaseQuestion {
   id: string;
   type: QuestionType;
   text: string;
   timeLimit?: number; // in seconds
-}
-
-export interface TrueFalseQuestion extends BaseQuestion {
-  type: 'TRUE_FALSE';
-  correctAnswer: boolean;
 }
 
 export interface MinefieldCell {
@@ -33,7 +28,7 @@ export interface GuessFusionQuestion extends BaseQuestion {
   answer2: string;  // Second element of the fusion
 }
 
-export type Question = TrueFalseQuestion | MinefieldQuestion | GuessFusionQuestion;
+export type Question = MinefieldQuestion | GuessFusionQuestion;
 
 export interface QuizSection {
   id: string;

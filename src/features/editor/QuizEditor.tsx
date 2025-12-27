@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useQuizStore } from '../../store/quizStore';
 import { Button } from '../../components/ui/button';
 import { Card, CardContent } from '../../components/ui/card';
-import { ArrowLeft, Save, Plus, Trash2, CheckCircle2, XCircle, LayoutGrid } from 'lucide-react';
+import { ArrowLeft, Save, Plus, Trash2, LayoutGrid, CheckCircle2 } from 'lucide-react';
 import type { Question, QuizSection } from '../../types/quiz';
 import { MinefieldEditor } from './MinefieldEditor';
 import { GuessFusionEditor } from './GuessFusionEditor';
@@ -165,14 +165,7 @@ export function QuizEditor({ onBack }: QuizEditorProps) {
 function SectionEditor({ quizId, section }: { quizId: string, section: QuizSection }) {
   const { addQuestion, updateQuestion, deleteQuestion } = useQuizStore();
 
-  const handleAddTrueFalse = () => {
-    addQuestion(quizId, section.id, {
-      type: 'TRUE_FALSE',
-      text: 'New Question',
-      correctAnswer: true,
-      timeLimit: 30,
-    } as any);
-  };
+
 
   const handleAddMinefield = () => {
     addQuestion(quizId, section.id, {
@@ -211,10 +204,7 @@ function SectionEditor({ quizId, section }: { quizId: string, section: QuizSecti
             <Plus className="size-4" />
             Campo Minato
           </Button>
-          <Button onClick={handleAddTrueFalse} variant="secondary" size="sm" className="gap-2">
-            <Plus className="size-4" />
-            Vero/Falso
-          </Button>
+
           <Button onClick={handleAddGuessFusion} variant="secondary" size="sm" className="gap-2">
             <Plus className="size-4" />
             Guess Fusion
@@ -258,53 +248,8 @@ function QuestionItem({
         </div>
 
         <div className="flex-1 space-y-4">
-          {question.type === 'TRUE_FALSE' ? (
-            <>
-              <input
-                type="text"
-                value={question.text}
-                onChange={(e) => onUpdate({ text: e.target.value })}
-                className="w-full bg-transparent border-none text-lg font-medium text-white placeholder:text-slate-600 focus:outline-none focus:ring-0"
-                placeholder="Enter question text..."
-              />
 
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2 bg-slate-950/50 p-1 rounded-lg border border-white/5">
-                  <button
-                    onClick={() => onUpdate({ correctAnswer: true })}
-                    className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${question.correctAnswer
-                      ? 'bg-green-500/20 text-green-400'
-                      : 'text-slate-500 hover:text-slate-300'
-                      }`}
-                  >
-                    <CheckCircle2 className="size-4" />
-                    True
-                  </button>
-                  <button
-                    onClick={() => onUpdate({ correctAnswer: false })}
-                    className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${!question.correctAnswer
-                      ? 'bg-red-500/20 text-red-400'
-                      : 'text-slate-500 hover:text-slate-300'
-                      }`}
-                  >
-                    <XCircle className="size-4" />
-                    False
-                  </button>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Time Limit</span>
-                  <input
-                    type="number"
-                    value={question.timeLimit}
-                    onChange={(e) => onUpdate({ timeLimit: parseInt(e.target.value) || 0 })}
-                    className="w-16 bg-slate-950 border border-slate-800 rounded px-2 py-1 text-sm text-center text-white focus:outline-none focus:border-indigo-500"
-                  />
-                  <span className="text-sm text-slate-500">sec</span>
-                </div>
-              </div>
-            </>
-          ) : question.type === 'MINEFIELD' ? (
+          {question.type === 'MINEFIELD' ? (
             <MinefieldEditor
               question={question}
               onUpdate={(updates) => onUpdate(updates as any)}

@@ -3,8 +3,8 @@ import { useQuizStore } from '../../store/quizStore';
 import type { QuizSection } from '../../types/quiz';
 import type { Player } from '../../types/game';
 import { Button } from '../../components/ui/button';
-import { Card } from '../../components/ui/card';
-import { ArrowLeft, ArrowRight, CheckCircle2, XCircle, Eye, EyeOff } from 'lucide-react';
+
+import { ArrowLeft, ArrowRight, Eye, EyeOff } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Scoreboard } from './Scoreboard';
 import { MinefieldGame } from './MinefieldGame';
@@ -43,9 +43,7 @@ export function GameSession({ section, players: initialPlayers, onExit }: GameSe
     }
   };
 
-  const handleReveal = () => {
-    setIsAnswerRevealed(!isAnswerRevealed);
-  };
+
 
   if (!currentQuestion) {
     return (
@@ -92,67 +90,7 @@ export function GameSession({ section, players: initialPlayers, onExit }: GameSe
         {/* Question Area - Centered in remaining space */}
         <div className="flex-1 flex flex-col items-center gap-8 min-w-0 pb-12 px-4 max-w-7xl mx-auto">
           <AnimatePresence mode="wait">
-            {currentQuestion.type === 'TRUE_FALSE' ? (
-              <motion.div
-                key={currentQuestion.id}
-                initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -20, scale: 0.95 }}
-                transition={{ duration: 0.4, ease: "easeOut" }}
-                className="w-full max-w-4xl"
-              >
-                <Card className="bg-slate-900/60 border-white/10 backdrop-blur-xl p-12 text-center shadow-2xl shadow-indigo-500/10 min-h-[400px] flex flex-col justify-center">
-                  <h2 className="text-4xl md:text-5xl font-bold text-white leading-tight mb-12">
-                    {currentQuestion.text}
-                  </h2>
-
-                  {/* Answer Reveal Section */}
-                  <div className="h-32 flex items-center justify-center">
-                    <AnimatePresence mode="wait">
-                      {isAnswerRevealed ? (
-                        <motion.div
-                          key="answer"
-                          initial={{ opacity: 0, scale: 0.5 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          exit={{ opacity: 0, scale: 0.5 }}
-                          className={`flex items-center gap-4 text-4xl font-bold ${currentQuestion.correctAnswer ? 'text-green-400' : 'text-red-400'
-                            }`}
-                        >
-                          {currentQuestion.correctAnswer ? (
-                            <>
-                              <CheckCircle2 className="size-12" />
-                              TRUE
-                            </>
-                          ) : (
-                            <>
-                              <XCircle className="size-12" />
-                              FALSE
-                            </>
-                          )}
-                        </motion.div>
-                      ) : (
-                        <motion.div
-                          key="hidden"
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          exit={{ opacity: 0 }}
-                        >
-                          <Button
-                            onClick={handleReveal}
-                            variant="outline"
-                            size="lg"
-                            className="text-xl px-8 py-6 border-indigo-500/30 hover:bg-indigo-500/10 hover:text-indigo-300"
-                          >
-                            <Eye className="mr-3 size-6" />
-                            Reveal Answer
-                          </Button>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-                </Card>
-              </motion.div>
-            ) : currentQuestion.type === 'MINEFIELD' ? (
+            {currentQuestion.type === 'MINEFIELD' ? (
               <motion.div
                 key={currentQuestion.id}
                 initial={{ opacity: 0 }}
