@@ -1,1 +1,10 @@
 @import "tailwindcss";
+
+@theme {
+  --color-slate-950: #020617;
+}
+
+:root {
+  background-color: var(--color-slate-950);
+  color: white;
+}
