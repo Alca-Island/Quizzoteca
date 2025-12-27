@@ -8,6 +8,7 @@ import { ArrowLeft, ArrowRight, CheckCircle2, XCircle, Eye, EyeOff } from 'lucid
 import { motion, AnimatePresence } from 'framer-motion';
 import { Scoreboard } from './Scoreboard';
 import { MinefieldGame } from './MinefieldGame';
+import { GuessFusionGame } from './GuessFusionGame';
 
 interface GameSessionProps {
   section: QuizSection;
@@ -147,6 +148,16 @@ export function GameSession({ section, players: initialPlayers, onExit }: GameSe
               className="w-full"
             >
               <MinefieldGame question={currentQuestion} isRevealed={isAnswerRevealed} />
+            </motion.div>
+          ) : currentQuestion.type === 'GUESS_FUSION' ? (
+            <motion.div
+              key={currentQuestion.id}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="w-full"
+            >
+              <GuessFusionGame question={currentQuestion} isRevealed={isAnswerRevealed} onReveal={handleReveal} />
             </motion.div>
           ) : null}
         </AnimatePresence>

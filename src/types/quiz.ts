@@ -1,4 +1,4 @@
-export type QuestionType = 'TRUE_FALSE' | 'MINEFIELD';
+export type QuestionType = 'TRUE_FALSE' | 'MINEFIELD' | 'GUESS_FUSION';
 
 export interface BaseQuestion {
   id: string;
@@ -26,7 +26,14 @@ export interface MinefieldQuestion extends BaseQuestion {
   grid: MinefieldCell[]; // Fixed size, but array for simplicity
 }
 
-export type Question = TrueFalseQuestion | MinefieldQuestion;
+export interface GuessFusionQuestion extends BaseQuestion {
+  type: 'GUESS_FUSION';
+  imageUrl: string; // The "Fusion" image
+  answer1: string;  // First element of the fusion
+  answer2: string;  // Second element of the fusion
+}
+
+export type Question = TrueFalseQuestion | MinefieldQuestion | GuessFusionQuestion;
 
 export interface QuizSection {
   id: string;

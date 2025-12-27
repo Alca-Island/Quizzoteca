@@ -5,6 +5,7 @@ import { Card, CardContent } from '../../components/ui/card';
 import { ArrowLeft, Save, Plus, Trash2, CheckCircle2, XCircle, LayoutGrid } from 'lucide-react';
 import type { Question, QuizSection } from '../../types/quiz';
 import { MinefieldEditor } from './MinefieldEditor';
+import { GuessFusionEditor } from './GuessFusionEditor';
 
 interface QuizEditorProps {
   onBack: () => void;
@@ -187,6 +188,17 @@ function SectionEditor({ quizId, section }: { quizId: string, section: QuizSecti
     } as any);
   };
 
+  const handleAddGuessFusion = () => {
+    addQuestion(quizId, section.id, {
+      type: 'GUESS_FUSION',
+      text: 'Who is fused?',
+      timeLimit: 30,
+      imageUrl: '',
+      answer1: '',
+      answer2: ''
+    } as any);
+  };
+
   return (
     <div className="space-y-6 pb-20">
       <div className="flex items-center justify-between bg-slate-900/40 p-4 rounded-lg border border-white/5 sticky top-0 z-10 backdrop-blur-md">
@@ -202,6 +214,10 @@ function SectionEditor({ quizId, section }: { quizId: string, section: QuizSecti
           <Button onClick={handleAddTrueFalse} variant="secondary" size="sm" className="gap-2">
             <Plus className="size-4" />
             Vero/Falso
+          </Button>
+          <Button onClick={handleAddGuessFusion} variant="secondary" size="sm" className="gap-2">
+            <Plus className="size-4" />
+            Guess Fusion
           </Button>
         </div>
       </div>
@@ -290,6 +306,11 @@ function QuestionItem({
             </>
           ) : question.type === 'MINEFIELD' ? (
             <MinefieldEditor
+              question={question}
+              onUpdate={(updates) => onUpdate(updates as any)}
+            />
+          ) : question.type === 'GUESS_FUSION' ? (
+            <GuessFusionEditor
               question={question}
               onUpdate={(updates) => onUpdate(updates as any)}
             />
