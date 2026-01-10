@@ -10,6 +10,7 @@ import { Scoreboard } from './Scoreboard';
 import { MinefieldGame } from './MinefieldGame';
 import { GuessFusionGame } from './GuessFusionGame';
 import { MapGame } from './MapGame';
+import { AVAILABLE_MAPS } from '../../utils/mapImages';
 
 interface GameSessionProps {
   section: QuizSection;
@@ -65,10 +66,36 @@ export function GameSession({ section, players: initialPlayers, onExit }: GameSe
     <div className="flex flex-col min-h-[calc(100vh-8rem)]">
       {/* Top Bar Controls */}
       <div className="flex items-center justify-between mb-4">
-        <Button variant="ghost" onClick={onExit} className="text-slate-400 hover:text-white">
-          <ArrowLeft className="mr-2 size-4" />
-          Exit Section
-        </Button>
+        <div className="flex items-center gap-4">
+            <Button variant="ghost" onClick={onExit} className="text-slate-400 hover:text-white">
+            <ArrowLeft className="mr-2 size-4" />
+            Exit Section
+            </Button>
+            
+            {/* Quick Navigation Dropdown */}
+            <select 
+                value={currentQuestionIndex}
+                onChange={(e) => {
+                    setCurrentQuestionIndex(Number(e.target.value));
+                    setIsAnswerRevealed(false);
+                }}
+                className="bg-slate-900 border border-white/10 rounded-lg text-slate-300 text-sm p-2 focus:ring-2 focus:ring-indigo-500 outline-none"
+            >
+                {section.questions.map((q, idx) => {
+                    let label = q.text.substring(0, 30);
+                    if (q.type === 'MAP') {
+                        const mapName = AVAILABLE_MAPS.find(m => m.url === q.mapImageUrl)?.name || 'Mappa';
+                        label = mapName;
+                    }
+                    return (
+                        <option key={q.id} value={idx}>
+                             {idx + 1}. {label}
+                        </option>
+                    );
+                })}
+            </select>
+        </div>
+
         <div className="text-slate-400 font-mono">
           Question {currentQuestionIndex + 1} / {section.questions.length}
         </div>

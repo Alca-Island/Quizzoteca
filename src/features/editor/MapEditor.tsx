@@ -50,6 +50,9 @@ export function MapEditor({ question, onUpdate }: MapEditorProps) {
     };
 
     const selectedPin = question.pins.find(p => p.id === selectedPinId);
+    
+    // Default size is 40 if not set
+    const currentPinSize = question.pinSize || 40;
 
     if (!question.mapImageUrl) {
         return (
@@ -73,36 +76,60 @@ export function MapEditor({ question, onUpdate }: MapEditorProps) {
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between">
-                <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    onClick={() => onUpdate({ mapImageUrl: '', pins: [] })}
-                    className="text-slate-400 hover:text-white"
-                >
-                    Change Map
-                </Button>
+                <div className="flex items-center gap-4">
+                  <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={() => onUpdate({ mapImageUrl: '', pins: [] })}
+                      className="text-slate-400 hover:text-white"
+                  >
+                      Change Map
+                  </Button>
+                  
+                  {/* Pin Size Slider */}
+                  <div className="flex items-center gap-2 bg-slate-900/50 px-3 py-1 rounded-full border border-white/10">
+                    <span className="text-xs text-slate-400 font-mono">Size: {currentPinSize}px</span>
+                    <input 
+                      type="range" 
+                      min="20" 
+                      max="100" 
+                      step="5"
+                      value={currentPinSize}
+                      onChange={(e) => onUpdate({ pinSize: parseInt(e.target.value) })}
+                      className="w-24 accent-indigo-500 cursor-pointer"
+                    />
+                  </div>
+                </div>
+
                 <div className="text-sm text-slate-400">
                     Click on map to add a pin
                 </div>
             </div>
 
             <div className="flex gap-6 h-[600px]">
-                {/* Map Area */}
-                <div className="flex-1 relative bg-slate-950 rounded-xl border border-slate-800 overflow-hidden">
+                {/* Map Area - Shrink wrapped */}
+                <div className="flex-1 relative bg-slate-950 rounded-xl border border-slate-800 overflow-hidden flex items-center justify-center">
                     <div 
                         ref={imageContainerRef}
-                        className="relative w-full h-full cursor-crosshair"
+                        className="relative inline-block max-w-full max-h-full cursor-crosshair"
                         onClick={handleAddPin}
                     >
                         <img 
                             src={question.mapImageUrl} 
                             alt="Map" 
-                            className="w-full h-full object-contain pointer-events-none select-none" 
+                            className="block max-w-full max-h-full w-auto h-auto object-contain pointer-events-none select-none"
+                            style={{ maxHeight: '100%' }}
                         />
                         {question.pins.map((pin, index) => (
                             <div
                                 key={pin.id}
-                                style={{ left: `${pin.x}%`, top: `${pin.y}%` }}
+                                style={{ 
+                                  left: `${pin.x}%`, 
+                                  top: `${pin.y}%`,
+                                  width: `${currentPinSize}px`,
+                                  height: `${currentPinSize}px`,
+                                  fontSize: `${currentPinSize * 0.4}px` // Scale font size
+                                }}
                                 className={`absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer transition-transform hover:scale-125 ${
                                     selectedPinId === pin.id ? 'z-20 scale-125' : 'z-10'
                                 }`}
@@ -111,12 +138,12 @@ export function MapEditor({ question, onUpdate }: MapEditorProps) {
                                     setSelectedPinId(pin.id);
                                 }}
                             >
-                                <div className={`size-8 rounded-full shadow-lg flex items-center justify-center border-2 ${
+                                <div className={`w-full h-full rounded-full shadow-lg flex items-center justify-center border-2 ${
                                     selectedPinId === pin.id 
                                         ? 'bg-red-500 border-white text-white' 
                                         : 'bg-white border-red-500 text-red-500'
                                 }`}>
-                                    <span className="font-bold text-xs">{index + 1}</span>
+                                    <span className="font-bold">{index + 1}</span>
                                 </div>
                             </div>
                         ))}

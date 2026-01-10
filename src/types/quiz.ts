@@ -40,6 +40,7 @@ export interface MapQuestion extends BaseQuestion {
   type: 'MAP';
   mapImageUrl: string;
   pins: MapPin[];
+  pinSize?: number; // Size in pixels, default to 40
 }
 
 export type Question = MinefieldQuestion | GuessFusionQuestion | MapQuestion;
