@@ -9,6 +9,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Scoreboard } from './Scoreboard';
 import { MinefieldGame } from './MinefieldGame';
 import { GuessFusionGame } from './GuessFusionGame';
+import { MapGame } from './MapGame';
 
 interface GameSessionProps {
   section: QuizSection;
@@ -110,6 +111,16 @@ export function GameSession({ section, players: initialPlayers, onExit }: GameSe
               >
                 <GuessFusionGame question={currentQuestion} isRevealed={isAnswerRevealed} />
               </motion.div>
+            ) : currentQuestion.type === 'MAP' ? (
+                <motion.div
+                  key={currentQuestion.id}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="w-full"
+                >
+                  <MapGame question={currentQuestion} isRevealed={isAnswerRevealed} />
+                </motion.div>
             ) : null}
           </AnimatePresence>
 

@@ -6,6 +6,7 @@ import { ArrowLeft, Save, Plus, Trash2, LayoutGrid, CheckCircle2 } from 'lucide-
 import type { Question, QuizSection } from '../../types/quiz';
 import { MinefieldEditor } from './MinefieldEditor';
 import { GuessFusionEditor } from './GuessFusionEditor';
+import { MapEditor } from './MapEditor';
 
 interface QuizEditorProps {
   onBack: () => void;
@@ -192,6 +193,16 @@ function SectionEditor({ quizId, section }: { quizId: string, section: QuizSecti
     } as any);
   };
 
+    const handleAddMap = () => {
+    addQuestion(quizId, section.id, {
+      type: 'MAP',
+      text: 'New Map Question',
+      timeLimit: 0,
+      mapImageUrl: '',
+      pins: []
+    } as any);
+  };
+
   return (
     <div className="space-y-6 pb-20">
       <div className="flex items-center justify-between bg-slate-900/40 p-4 rounded-lg border border-white/5 sticky top-0 z-10 backdrop-blur-md">
@@ -201,13 +212,18 @@ function SectionEditor({ quizId, section }: { quizId: string, section: QuizSecti
         </div>
         <div className="flex gap-2">
           <Button onClick={handleAddMinefield} variant="secondary" size="sm" className="gap-2">
-            <Plus className="size-4" />
-            Campo Minato
-          </Button>
+             <Plus className="size-4" />
+             Campo Minato
+           </Button>
+ 
+           <Button onClick={handleAddGuessFusion} variant="secondary" size="sm" className="gap-2">
+             <Plus className="size-4" />
+             Guess Fusion
+           </Button> 
 
-          <Button onClick={handleAddGuessFusion} variant="secondary" size="sm" className="gap-2">
+           <Button onClick={handleAddMap} variant="secondary" size="sm" className="gap-2">
             <Plus className="size-4" />
-            Guess Fusion
+            Mappa
           </Button>
         </div>
       </div>
@@ -256,6 +272,11 @@ function QuestionItem({
             />
           ) : question.type === 'GUESS_FUSION' ? (
             <GuessFusionEditor
+              question={question}
+              onUpdate={(updates) => onUpdate(updates as any)}
+            />
+          ) : question.type === 'MAP' ? (
+            <MapEditor
               question={question}
               onUpdate={(updates) => onUpdate(updates as any)}
             />

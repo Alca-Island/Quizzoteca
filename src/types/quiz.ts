@@ -1,4 +1,4 @@
-export type QuestionType = 'MINEFIELD' | 'GUESS_FUSION';
+export type QuestionType = 'MINEFIELD' | 'GUESS_FUSION' | 'MAP';
 
 export interface BaseQuestion {
   id: string;
@@ -28,7 +28,21 @@ export interface GuessFusionQuestion extends BaseQuestion {
   answer2: string;  // Second element of the fusion
 }
 
-export type Question = MinefieldQuestion | GuessFusionQuestion;
+export interface MapPin {
+  id: string;
+  x: number; // Percentage 0-100
+  y: number; // Percentage 0-100
+  question: string;
+  answer: string;
+}
+
+export interface MapQuestion extends BaseQuestion {
+  type: 'MAP';
+  mapImageUrl: string;
+  pins: MapPin[];
+}
+
+export type Question = MinefieldQuestion | GuessFusionQuestion | MapQuestion;
 
 export interface QuizSection {
   id: string;
