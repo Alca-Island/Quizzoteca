@@ -39,12 +39,15 @@ export function MapGame({ question }: MapGameProps) {
     return (
         <div className="flex items-center justify-center w-full h-[80vh] bg-slate-950 rounded-xl border border-slate-800 overflow-hidden select-none relative">
             {/* Map Layer Container - shrink wraps the image */}
-            <div className="relative flex justify-center items-center w-fit h-fit max-w-full max-h-full">
+            <div 
+                className="relative block w-fit h-fit max-w-full max-h-full"
+                style={{ lineHeight: 0 }}
+            >
                 {question.mapImageUrl && (
                    <img 
                        src={question.mapImageUrl} 
                        alt="Game Map" 
-                       className="block max-w-full max-h-full w-auto h-auto object-contain pointer-events-none"
+                       className="block max-w-full w-auto h-auto object-contain pointer-events-none"
                        style={{ maxHeight: '80vh' }}
                    />
                 )}

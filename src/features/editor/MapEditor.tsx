@@ -111,14 +111,15 @@ export function MapEditor({ question, onUpdate }: MapEditorProps) {
                 <div className="flex-1 relative bg-slate-950 rounded-xl border border-slate-800 overflow-hidden flex items-center justify-center">
                     <div 
                         ref={imageContainerRef}
-                        className="relative flex justify-center items-center w-fit h-fit max-w-full max-h-full cursor-crosshair"
+                        className="relative block w-fit h-fit max-w-full max-h-full cursor-crosshair"
+                        style={{ lineHeight: 0 }}
                         onClick={handleAddPin}
                     >
                         <img 
                             src={question.mapImageUrl} 
                             alt="Map" 
-                            className="block max-w-full max-h-full w-auto h-auto object-contain pointer-events-none select-none"
-                            style={{ maxHeight: '100%' }}
+                            className="block max-w-full w-auto h-auto object-contain pointer-events-none select-none"
+                            style={{ maxHeight: '600px' }}
                         />
                         {question.pins.map((pin, index) => (
                             <div
