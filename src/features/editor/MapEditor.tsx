@@ -111,7 +111,7 @@ export function MapEditor({ question, onUpdate }: MapEditorProps) {
                 <div className="flex-1 relative bg-slate-950 rounded-xl border border-slate-800 overflow-hidden flex items-center justify-center">
                     <div 
                         ref={imageContainerRef}
-                        className="relative inline-block max-w-full max-h-full cursor-crosshair"
+                        className="relative flex justify-center items-center w-fit h-fit max-w-full max-h-full cursor-crosshair"
                         onClick={handleAddPin}
                     >
                         <img 

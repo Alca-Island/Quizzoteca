@@ -39,7 +39,7 @@ export function MapGame({ question }: MapGameProps) {
     return (
         <div className="flex items-center justify-center w-full h-[80vh] bg-slate-950 rounded-xl border border-slate-800 overflow-hidden select-none relative">
             {/* Map Layer Container - shrink wraps the image */}
-            <div className="relative inline-block max-w-full max-h-full">
+            <div className="relative flex justify-center items-center w-fit h-fit max-w-full max-h-full">
                 {question.mapImageUrl && (
                    <img 
                        src={question.mapImageUrl} 
